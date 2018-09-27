@@ -1,3 +1,6 @@
+//Recipe Book
+//Author: Chris Meyring
+
 var saveLog;
 var recipeContainer = document.getElementById('root');
 var recipeRow = document.getElementById('recipe-row');
