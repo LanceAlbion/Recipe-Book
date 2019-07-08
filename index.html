@@ -8,24 +8,24 @@
   </head>
 
   <body>
-    <nav class='navbar navbar-dark bg-primary' id='nav-bar'>
+    <nav class='navbar' id='nav-bar'>
       <div id='home-btn-container'>
-        <a href='#thumb' id='home-btn' class='btn btn-dark'>Home</a>
+        <a href='#thumb' id='home-btn' class='btn btn-dark no-box-shadow-focus'>Home</a>
       </div>
       <div id='search-bar-container'>
         <div class="input-group" id='search-bar'>
           <div class="input-group-prepend">
             <img id='mag-glass' class="input-group-text" src='assets/magnifying-glass.png'>
           </div>
-          <input id='search-input' type="text" class="form-control" placeholder="Search...">
+          <input id='search-input' type="text" class="form-control form-control-override-border no-box-shadow-focus" placeholder="Search...">
         </div>
       </div>
       <div id='nav-btns-container'>
-        <a href=#add id='add-btn' class='btn btn-success'>Add</a>
+        <a href=#add id='add-btn' class='btn btn-success no-box-shadow-focus'>Add</a>
       </div>
     </nav>
 
-    <div id='root'>
+    <div id='root' class="ml-5 mr-5">
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

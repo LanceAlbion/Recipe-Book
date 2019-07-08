@@ -61,6 +61,9 @@ if (localStorage.getItem('saveLog-recipe')) {
   saveLog = JSON.parse(localStorage.getItem('saveLog-recipe'));
 } else {
   saveLog = [];
+  for (let i = 0; i < 6; i++) {
+    saveLog.push(firstRecipe, secondRecipe, thirdRecipe);
+  }
 }
 
 searchBar.addEventListener('keyup', matchIngredientSearch);
@@ -69,13 +72,13 @@ window.addEventListener('load', function () {
 })
 
 //setup for example recipes
-/*for (var i = 0; i < 12; i++) {
-  saveLog.push(firstRecipe);
-  saveLog.push(secondRecipe);
-  saveLog.push(thirdRecipe);
-}
+// for (var i = 0; i < 12; i++) {
+//   saveLog.push(firstRecipe);
+//   saveLog.push(secondRecipe);
+//   saveLog.push(thirdRecipe);
+// }
 
-localStorage.setItem('saveLog-recipe', JSON.stringify(saveLog));*/
+localStorage.setItem('saveLog-recipe', JSON.stringify(saveLog));
 
 //beginning of num2fraction
 var abs = Math.abs
@@ -167,15 +170,9 @@ var routes = {
   }
 };
 
-function displayElementWithText(elementHTML, displayType, text) {
-  var element = document.getElementById(elementHTML);
-  element.innerText = text;
-  element.style.display = displayType;
-}
-
-function hideElement(elementHTML) {
-  var element = document.getElementById(elementHTML);
-  element.style.display = 'none';
+function displayError(errorElm, text) {
+  errorElm.innerText = text;
+  errorElm.style.display = 'block';
 }
 
 function invisibilizeElement(elementHTML) {
@@ -234,8 +231,9 @@ function saveEntry() {
   var instructionsVal;
   var recipeEntry;
 
-  if (ingredientPreviewDiv == null || ingredientPreviewDiv.childElementCount == 0) {
-    displayElementWithText('error-p', 'block', 'At least one ingredient is required before adding recipe');
+  if (ingredientPreviewDiv.childElementCount === 0) {
+    var errorElm = document.getElementById('error-p');
+    displayError(errorElm, 'At least one ingredient is required before adding recipe');
   } else {
     nameVal = document.getElementById('foodName').value;
     timeVal = document.getElementById('cookTime').value;
@@ -280,6 +278,7 @@ function storeIngredients() {
   var amntElmt = document.getElementById('ingredient-amount');
   var unitElmt = document.getElementById('ingredient-unit');
   var foodElmt = document.getElementById('ingredient-food-item');
+  var errorElm = document.getElementById('error-p');
   var amntVal = amntElmt.value;
   var amntSplit = amntVal.split('.');
   var amntFloat = parseFloat(amntVal);
@@ -295,9 +294,9 @@ function storeIngredients() {
   }
 
   if (amntVal == '') {
-    displayElementWithText('error-p', 'block', 'Please fill first field');
+    displayError(errorElm, 'Please fill first field');
   } else {
-    hideElement('error-p');
+    errorElm.style.display = 'none';
     ingredientObj = {
       amount: amntFinal,
       unit: unitElmt.value,
@@ -314,8 +313,6 @@ function storeIngredients() {
 
 function calculatePortion(recipeId) {
   var portionSlider = document.getElementById('portion-slider').value;
-  var listDiv2 = document.getElementById('ingredient-list-div');
-  var listPlaceholder = '';
   var saveLogIngredients = saveLog[recipeId].ingredients;
   var ingredientAmt;
   var ingredientList;
@@ -324,10 +321,10 @@ function calculatePortion(recipeId) {
     ingredientAmt = transformToFrac(saveLogIngredients[i].amount, portionSlider);
     ingredientList = document.getElementById('r-ingredient-text' + i);
     ingredientList.innerText = ingredientAmt +
-      ' ' +
-      saveLogIngredients[i].unit +
-      ' ' +
-      saveLogIngredients[i].food;
+                               ' ' +
+                               saveLogIngredients[i].unit +
+                               ' ' +
+                               saveLogIngredients[i].food;
   }
 }
 
@@ -335,32 +332,25 @@ function identifyCheckboxState(id) {
   var checkbox = document.getElementById('r-ingredient-checkbox' + id);
   var text = document.getElementById('r-ingredient-text' + id);
 
-  text.style = checkbox.checked ? 'color: rgba(0, 0, 0, 0.2)' :
-                                  'color : rgba(0, 0, 0, 0.65)';
+  text.style.textDecoration = checkbox.checked ? 'line-through' : 'none';
 }
 
 function renderIngredientElements() {
-  var displayBox = document.getElementById('display-box');
+  var listThing = document.getElementById('ingredient-display-div');
   var ingredient = '';
-  var ingredientList;
 
   for (var i = 0; i < ingredientAry.length; i++) {
-    ingredient += `<div class='ingredient-preview'>
-                     <li class='ingredient-preview-text'>
+    ingredient +=  `<div class='ingredient-preview'>
+                      <li class='ingredient-preview-text'>
                            ${transformToFrac(ingredientAry[i].amount, 1)} 
                            ${ingredientAry[i].unit} 
                            ${ingredientAry[i].food}
-                     </li>
-                     <button 
-                       type='button' 
-                       onclick='removeIngredientElement(${i})'
-                       class='ingredient-preview-delete-btn btn'>X
-                     </button>
-                   </div>`;
+                      </li>
+                      <button class='ingredient-preview-delete-btn btn ml-2' type='button' onclick='removeIngredientElement(${i})'>X</button>
+                    </div>`;
   }
-  ingredientList = `<ul id='ingredient-display-div'>${ingredient}</ul>`;
-
-  displayBox.innerHTML = ingredientList;
+  
+  listThing.innerHTML = ingredient;
 }
 
 function removeIngredientElement(elementIndex) {
@@ -374,136 +364,65 @@ function removeIngredientElement(elementIndex) {
 
 function renderAddRecipe() {
   searchBar.disabled = true;
-  var addMenu = `<form id='add-form'>
-                   <div class='add-menu-input-field'>
-                     <label for='foodName'>Name</label>
-                     <input id='foodName' 
-                            type='text' 
-                            class='form-control' 
-                            placeholder='Name'>
-                   </div>
-                   <div class='add-menu-input-field'>
-                     <label for='cookTime'>Cook time</label>
-                     <input id='cookTime'
-                            type='text' 
-                            class='form-control' 
-                            placeholder='50 minutes'>
-                   </div>
-                   <div class='add-menu-input-field'>
-                     <label for='tempText'>Cook temperature</label>
-                     <input id='tempText'
-                            type='text' 
-                            class='form-control' 
-                            placeholder='350F'>
-                   </div>
-                   <p id='error-p' style='display:none'></p>
-                   <div id='ingredients-input-div' class='add-menu-input-field'>
-                     <div id='ingredient-label-and-field'>
-                       <label for='ingredientText'>Ingredients</label>
-                       <div id='ingredient-fields'>
-                         <div class='col remove-col-pad-left'>
-                           <input id='ingredient-amount' 
-                                  type='number' 
-                                  class='form-control' 
-                                  placeholder='1'>
-                         </div>
-                         <div class='col'>
-                           <input id='ingredient-unit' 
-                                  type='text' 
-                                  class='form-control' 
-                                  placeholder='cup'>
-                         </div>
-                         <div class='col'>
-                           <input id='ingredient-food-item' 
-                                  type='text' 
-                                  class='form-control' 
-                                  placeholder='rice'>
-                         </div>
-                         <button type='button' 
-                                 class='btn btn-info' 
-                                 onclick='storeIngredients()'>+
-                         </button>
-                       </div>
-                     </div>
-                     <div id='display-box'>
-                     </div>
-                       <small 
-                         id='ingredient-guideline' 
-                         class='form-text' >Ingredient amounts that aren't
-                                            whole numbers must be accurate
-                                            to two decimal places. Ex. 1.33
-                       </small>
-                     </div>
-                   </div>
-                   <div class='add-menu-input-field'>
-                     <label for='instructionsText'>Instructions</label>
-                     <input id='instructionsText' 
-                            type='text' 
-                            class='form-control' 
-                            placeholder='Put it in the thing and cook it'>
-                   </div>
-                   <div id='pick-pic-div'>
-                     <p class='pick-pic-text'>
-                       Choose a picture for your recipe:
-                     </p>
-                     <div id='dropdown-div' class="dropdown pick-pic-text">
-                       <button id='pic-select-btn' 
-                               class="btn btn-secondary dropdown-toggle" 
-                               type="button" 
-                               id="dropdownMenuButton" 
-                               data-toggle="dropdown" 
-                               aria-haspopup="true" 
-                               aria-expanded="false">
-                         Default
-                       </button>
-                       <div class="dropdown-menu" >
-                         <a id='picture-default' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Default")'>Default
-                         </a>
-                         <a id='picture-pork' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Pork")'>Pork
-                         </a>
-                         <a id='picture-beef' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Beef")'>Beef
-                         </a>
-                         <a id='picture-chicken' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Chicken")'>Chicken
-                         </a>
-                         <a id='picture-rice' 
-                           class="dropdown-item" 
-                           onclick='replacePicSelectText("Rice")'>Rice
-                         </a>
-                         <a id='picture-pasta' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Pasta")'>Pasta
-                         </a>
-                         <a id='picture-taco' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Taco")'>Taco
-                         </a>
-                         <a id='picture-potato' 
-                            class="dropdown-item" 
-                            onclick='replacePicSelectText("Potato")'>Potato
-                         </a>
-                       </div>
-                     </div>
-                     <img id='pick-pic-preview' src='assets/placeholder.png'>
-                   </div>
-                   <div>
-                     <button type='button' 
-                             class='btn btn-outline-success' 
-                             onclick='saveEntry()'>Add
-                     </button>
-                     <a id='add-menu-cancel-btn' 
-                        href='#thumb' 
-                        class='btn btn-outline-danger'>Cancel
-                     </a>
-                   </div>
-                 </form>`
+  var addMenu =  `<form id='add-form' class="w-75 mt-4">
+                    <div class='mb-3'>
+                      <label for='foodName'>Name</label>
+                      <input id='foodName' class='form-control no-box-shadow-focus form-control-override-border' type='text' placeholder='Name'>
+                    </div>
+                    <div class='mb-3'>
+                      <label for='cookTime'>Cook time</label>
+                      <input id='cookTime' class='form-control no-box-shadow-focus form-control-override-border' type='text' placeholder='50 minutes'>
+                    </div>
+                    <div class='mb-3'>
+                      <label for='tempText'>Cook temperature</label>
+                      <input id='tempText' class='form-control no-box-shadow-focus form-control-override-border' type='text' placeholder='350F'>
+                    </div>
+                    <p id='error-p' style='display:none'></p>
+                    <div id='ingredients-input-div' class='mb-3'>
+                      <div id='ingredient-label-and-field'>
+                        <label for='ingredientText'>Ingredients</label>
+                        <div id='ingredient-fields'>
+                          <div class='col remove-col-pad-left'>
+                            <input id='ingredient-amount' class='form-control no-box-shadow-focus form-control-override-border' type='number' placeholder='1'>
+                          </div>
+                          <div class='col'>
+                            <input id='ingredient-unit' class='form-control no-box-shadow-focus form-control-override-border' type='text' placeholder='cup'>
+                          </div>
+                          <div class='col'>
+                            <input id='ingredient-food-item' class='form-control no-box-shadow-focus form-control-override-border' type='text' placeholder='rice'>
+                          </div>
+                          <button class='btn btn-info no-box-shadow-focus' type='button' onclick='storeIngredients()'>+</button>
+                        </div>
+                      </div>
+                      <ul id='ingredient-display-div'></ul>
+                      <small id='ingredient-guideline' class='form-text' >Ingredient amounts that aren't whole numbers must be accurate to two decimal places. Ex. 1.33</small>
+                    </div>
+                    <div class='mb-5'>
+                      <label for='instructionsText'>Instructions</label>
+                      <input id='instructionsText' class='form-control no-box-shadow-focus form-control-override-border' type='text' placeholder='Put it in the thing and cook it'>
+                    </div>
+                    <div id='pick-pic-div'>
+                      <p class='mt-4'>Choose a picture for your recipe:</p>
+                      <div class="dropdown mt-4 ml-2">
+                        <button id='pic-select-btn' class="btn btn-secondary dropdown-toggle no-box-shadow-focus" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Default</button>
+                        <div class="dropdown-menu" >
+                          <a id='picture-default' class="dropdown-item" onclick='replacePicSelectText("Default")'>Default</a>
+                          <a id='picture-pork' class="dropdown-item" onclick='replacePicSelectText("Pork")'>Pork</a>
+                          <a id='picture-beef' class="dropdown-item" onclick='replacePicSelectText("Beef")'>Beef</a>
+                          <a id='picture-chicken' class="dropdown-item" onclick='replacePicSelectText("Chicken")'>Chicken</a>
+                          <a id='picture-rice' class="dropdown-item" onclick='replacePicSelectText("Rice")'>Rice</a>
+                          <a id='picture-pasta' class="dropdown-item" onclick='replacePicSelectText("Pasta")'>Pasta</a>
+                          <a id='picture-taco' class="dropdown-item" onclick='replacePicSelectText("Taco")'>Taco</a>
+                          <a id='picture-potato' class="dropdown-item" onclick='replacePicSelectText("Potato")'>Potato</a>
+                        </div>
+                      </div>
+                      <img id='pick-pic-preview' class="ml-2" src='assets/placeholder.png'>
+                    </div>
+                    <div>
+                      <button class='btn btn-outline-success no-box-shadow-focus' type='button' onclick='saveEntry()'>Add</button>
+                      <a id='add-menu-cancel-btn' class='btn btn-outline-danger no-box-shadow-focus ml-3' href='#thumb'>Cancel</a>
+                    </div>
+                  </form>`
 
   return addMenu;
 }
@@ -518,56 +437,35 @@ function renderRecipesThumb() {
 
   for (var i = 0; i < saveLog.length; i++) {
     entry = saveLog[i];
-    checkEaten = entry.lastEaten ? 'Last Eaten: ' + 
-                                   entry.lastEaten : 
-                                   'Last Eaten: Never';
+    checkEaten = entry.lastEaten ? 'Last Eaten: ' + entry.lastEaten : 'Last Eaten: Never';
     thumbnail += 
-    `<div id='thumb-container${i}' 
-          class='col-4'>
-       <div class='card'>
-         <div id='delete-entry-container'
-              class='delete-entry-container'>
-           <div id='delete-confirm-container${i}'
-                class='delete-confirm-container'>
-             <p id='delete-confirm-text'>Are you sure?</p>
-             <button id='confirm-btn-yes'
-                     class='btn'
-                     onclick='deleteEntry(${i})'>Yes
-             </button>
-             <button id='confirm-btn-no'
-                     class='btn'
-                     onclick='invisibilizeElement("delete-confirm-container${i}")'>No
-             </button>
-           </div>
-             <button id='delete-btn' 
-                     class='btn btn-danger'
-                     onclick='focusElement("delete-confirm-container${i}")'>X
-             </button>
-         </div>
-         <div class='img-thumb-div'>
-           <a href='#single'
-              onclick='storeId(${i})'>
-             <img src='${entry.pic}' 
-                  class='card-img-top entry-pic'>
-           </a>
-         </div>
-         <div class='card-body'>
-           <p class='card-text'>${entry.name}</p>
-           <p id='just-ate-text' class='card-text'>${checkEaten}</p>
-           <button id='just-ate-btn' 
-                   class='btn btn-outline-primary btn-lg btn-block' 
-                   onclick='updateLastEaten(${i})'>Just Ate
-           </button>
-         </div>
-       </div>
-     </div>`
+     `<div id='thumb-container${i}' class='col-4'>
+        <div class='card ml-5 mr-5 mt-4'>
+          <div id='delete-entry-container' class='row mt-1'>
+            <div id='delete-confirm-container${i}' class='delete-confirm-container col-10'>
+              <p class="ml-3 mt-1 mb-1">Are you sure?</p>
+              <button class='btn ml-2' onclick='deleteEntry(${i})'>Yes</button>
+              <button class='btn ml-2' onclick='invisibilizeElement("delete-confirm-container${i}")'>No</button>
+            </div>
+            <div class="col-2">
+              <button id='delete-btn' class='btn btn-danger ml-5 no-box-shadow-focus' onclick='focusElement("delete-confirm-container${i}")'>X</button>
+            </div>
+          </div>
+          <div class='img-thumb-div'>
+            <a href='#single' onclick='storeId(${i})'>
+              <img src='${entry.pic}' class='card-img-top entry-pic'>
+            </a>
+          </div>
+          <div class='card-body pb-2'>
+            <p class='card-text font-weight-bold text-black-50'>${entry.name}</p>
+            <p id='just-ate-text' class='card-text text-secondary'>${checkEaten}</p>
+            <button id='just-ate-btn' class='btn btn-outline-primary btn-lg btn-block no-box-shadow-focus' onclick='updateLastEaten(${i})'>Just Ate</button>
+          </div>
+        </div>
+      </div>`
   }
-  rowContainer = 
-  `<div class='row'>
-    ${thumbnail}
-   </div> `;
-
-   return rowContainer;
+  rowContainer = `<div class='row'>${thumbnail}</div> `;
+  return rowContainer;
 }
 
 function renderRecipe(recipeId) {
@@ -581,16 +479,13 @@ function renderRecipe(recipeId) {
 
   for (var i = 0; i < saveLogIngredients.length; i++) {
     ingredientAmt = transformToFrac(saveLogIngredients[i].amount, 1);
-    listPlaceholder += `<div class='ingredient-div'>
-                          <input id='r-ingredient-checkbox${i}' 
-                                 class='checkbox'
-                                 type='checkbox' 
-                                 onclick='identifyCheckboxState(${i})'>
-                          <li id='r-ingredient-text${i}'
-                              class='ingredient-list'>${
-                                ingredientAmt + ' ' +
-                                saveLog[recipeId].ingredients[i].unit + ' ' +
-                                saveLog[recipeId].ingredients[i].food}
+    listPlaceholder += `<div class='ingredient-div '>
+                          <input id='r-ingredient-checkbox${i}' class='checkbox' type='checkbox' onclick='identifyCheckboxState(${i})'>
+                          <li id='r-ingredient-text${i}' class='ingredient-list text-secondary font-weight-normal'>${
+                            ingredientAmt + ' ' +
+                            saveLog[recipeId].ingredients[i].unit + ' ' +
+                            saveLog[recipeId].ingredients[i].food
+                          }
                           </li>
                         </div>`;
   }
@@ -598,44 +493,30 @@ function renderRecipe(recipeId) {
   listDiv = `<div id='ingredient-list-div'>${listPlaceholder}</div>`
 
   dynamicElementPlaceholder =
-    `<div id='container-main-single'>
+     `<div id='container-main-single' class="w-75">
         <img src=${saveLog[recipeId].pic}>
-        <h1>${saveLog[recipeId].name}</h1>
-        <ul>Ingredients</ul>
+        <h1 class="font-weight-bold text-black-50">${saveLog[recipeId].name}</h1>
         <div id='slider-container'>
           <div id='tickmark-container'>
-            <p class='tickmark'
-               id='t0-5'>0.5</p>
-            <p class='tickmark'
-               id='t1'>1</p>
-            <p class='tickmark'
-               id='t1-5'>1.5</p>
-            <p class='tickmark'
-               id='t2'>2</p>
+            <p id='t0-5' class='tickmark pr-5'>0.5</p>
+            <p id='t1' class='tickmark pr-5'>1</p>
+            <p id='t1-5' class='tickmark pr-5'>1.5</p>
+            <p id='t2' class='tickmark'>2</p>
           </div>
-          <input id='portion-slider'
-                 type='range'
-                 list='tickmarks'
-                 min='0.5'
-                 max='2'
-                 value='1'
-                 step='0.5'
-                 onchange='calculatePortion(${recipeId})'>
+          <input id='portion-slider' type='range' list='tickmarks' min='0.5' max='2' value='1' step='0.5' onchange='calculatePortion(${recipeId})'>
         </div>
+        <ul class="font-weight-bold text-black-50">Ingredients</ul>
         ${listDiv}
-        <div id='cook-container-container'>
-          <div id='cook-container-raw-text'>
-            <p id='cook-time-temp'>Temp:</p>
-            <p>${saveLog[recipeId].temp}</p>
-          </div>
-          <div id='cook-container-dynamic-info'>
-            <p id='cook-time-temp'>Time:</p>
-            <p>${saveLog[recipeId].time}</p>
-          </div>
+        <div id='cook-container-container' class="row">
+          <p class="col text-black-50 font-weight-bold">Temp</p>
+          <p class="col text-black-50 font-weight-bold">Time</p>
+          <div class="w-100"></div>
+          <p class="col text-secondary">${saveLog[recipeId].temp}</p>
+          <p class="col text-secondary">${saveLog[recipeId].time}</p>
         </div>
-        <h2>Instructions</h2>
-        <div id='instructions'>
-          <p>${saveLog[recipeId].instructions}</p>
+        <h2 class="font-weight-bold text-black-50">Instructions</h2>
+        <div id='instructions' class="w-50 mx-auto mt-4">
+          <p class="text-secondary">${saveLog[recipeId].instructions}</p>
         </div>
       </div>`
 

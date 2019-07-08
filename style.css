@@ -1,4 +1,22 @@
+/* .form-control:focus {
+  box-shadow: 0 0 0 0 !important;
+  border-color: transparent !important;
+  border: none !important;
+} */
+
+.no-box-shadow-focus:focus {
+  box-shadow: 0 0 0 0 !important;
+}
+
+.form-control-override-border:focus {
+  border: 1px solid #ced4da !important;
+}
+
 /*nav bar beginning*/
+#nav-bar {
+  background-color: #5ba2ff;
+}
+
 #home-btn-container {
   flex-grow: 1;
 }
@@ -24,20 +42,11 @@
   justify-content: flex-end;
 }
 
-#add-btn {
-  margin-right: 2%;
-}
 /*nav bar end*/
 
 /*add form begin*/
 #add-form {
-  max-width: 85%;
   margin: auto;
-  margin-top: 1%;
-}
-
-.add-menu-input-field {
-  margin-bottom: 1%;
 }
 
 #error-p {
@@ -68,19 +77,13 @@
     padding: 0px;
     height: 26px;
     width: 18px;
-    margin-left: 0.5%;
     background-color: white;
     border-color: rgba(0, 0, 0, 0);
     color: black;
 }
 
 .ingredient-preview-delete-btn:hover {
-  padding: 0px;
-    height: 26px;
-    width: 18px;
-    margin-left: 0.5%;
-    background-color: rgba(211, 211, 211, 0.8);
-    color: black;
+  background-color: rgba(211, 211, 211, 0.8);
 }
 
 #ingredient-guideline {
@@ -91,15 +94,6 @@
   display: flex;
 }
 
-.pick-pic-text {
-  padding-top: 3%;
-}
-
-#dropdown-div {
-  margin-left: 0.5%;
-  width: 90.78px;
-}
-
 #pic-select-btn {
   width: 90.78px;
 }
@@ -107,49 +101,21 @@
 #pick-pic-preview {
  max-width: 332px;
  max-height: 175px;
- margin-left: 2%;
-}
-
-#add-menu-cancel-btn {
-  margin-left: 1%;
 }
 /*add form end*/
 
-.col-4 {
-  padding-left: 5%;
-  padding-right: 5%;
-  padding-top: 1%;
-}
-
-.delete-entry-container {
+/* .delete-entry-container {
   display: flex;
-}
+} */
 
 .delete-confirm-container {
   visibility: hidden;
   display: flex;
-  width: 94%;
-}
-
-#delete-confirm-text {
-  margin-left: 4%;
-  margin-bottom: 0%;
-  margin-top: 1%;
-}
-
-#confirm-btn-yes {
-  margin-left: 3%;
-}
-
-#confirm-btn-no {
-  margin-left: 1.5%;
 }
 
 #container-main-single {
-  max-width: 70%;
-  border: 1px solid black;
   margin: auto;
-  margin-top: 1%;
+  height: 100%;
 }
 
 #container-main-single img, .card img {
@@ -165,25 +131,8 @@
   display: inline;
 }
 
-#t0-5 {
-  margin-left: 46.2%;
-}
-
-#t1 {
-  margin-left: 1.1%;
-}
-
-#t1-5 {
-  margin-left: 1.2%;
-}
-
-#t2 {
-  margin-left: 1.15%;
-}
-
 .checkbox {
   display: inline;
-  margin-left: 45.7%;
 }
 
 .ingredient-list {
@@ -200,16 +149,8 @@
   padding: 0px;
 }
 
-#cook-container-raw-text, #cook-container-dynamic-info {
-  display: inline-block;
-  width: 49%;
-}
-
 #instructions {
   border: 1px solid rgba(0, 0, 0, 0.3);
-  margin-left: 20%;
-  margin-right: 20%;
-  margin-bottom: 1%;
   border-radius: 12px;
 }
 
@@ -219,9 +160,30 @@
 }
 
 #portion-slider {
-  margin-left: 46.5%;
+  display: block;
+  margin: 0 auto;
 }
 
 .no-display {
   display: none;
+}
+
+#ingredient-list-div {
+  text-align: center;
+}
+
+#root {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+html {
+  height: 100%;
+}
+
+#tickmark-container {
+  text-align: center;
 }
