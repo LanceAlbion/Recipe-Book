@@ -9,7 +9,6 @@ module.exports = {
     devtool: 'inline-source-map',
   plugins: [
       new HtmlWebpackPlugin({
-          title: 'Recipe Center',
           template: './src/index.html',
           filename: './index.html'
       })
@@ -32,6 +31,19 @@ module.exports = {
               use: [
                   'file-loader'
               ]
+          },
+          {
+              test: /\.js$/, 
+              exclude: /node_modules/,
+              use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: [
+                        '@babel/preset-env',
+                        "@babel/preset-react"
+                    ]
+                }
+              }
           }
       ]
   }
