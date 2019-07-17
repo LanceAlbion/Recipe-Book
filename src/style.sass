@@ -1,0 +1,84 @@
+// .fade
+//   transition: opacity 1s linear 
+//   &:not(.show)
+//     opacity: 0
+//   &.show
+//     opacity: 1
+
+html
+  height: 100%
+  
+body
+  height: 100%
+
+.no-box-shadow-focus
+  &:focus
+  box-shadow: 0 0 0 0 !important
+
+.form-control-override-border
+  &:focus
+  border: 1px solid #ced4da !important
+
+#navbar
+  display: flex
+  justify-content: space-between
+  background-color: #85c7ff
+
+#search-icon
+  height: 38px
+
+#root
+  height: 100%
+
+#home-placeholder-pic
+  display: block
+  text-align: center
+
+#home-placeholder-text
+  text-align: center
+  line-height: 5rem
+  color: #6c757d91
+
+#populate-btn
+  display: block
+
+#cooktime-input
+  display: inline
+  border-radius: .25rem 0rem 0rem .25rem
+
+#add-ingredient-btn
+  border-radius: 0rem .25rem .25rem 0rem
+
+#hours-btn
+  border-radius: 0rem
+
+#placeholder-pic
+  width: 13rem
+  height: 8rem
+
+#single-recipe-pic
+  display: block
+
+#search-icon
+  &:active
+    background-color: #dcdfe1
+
+#single-entry-instructions
+  overflow-wrap: break-word
+
+.dynamic-body
+  height: 100%
+
+.invisible
+  visibility: hidden
+
+input:checked + .single-r-ingredient-item
+  text-decoration: line-through
+
+.bg-selected 
+  background-color: #515151 !important
+
+.ingredient-border
+  border-top: 0.2rem solid #85c7ff80
+  border-bottom: 0.2rem solid #85c7ff80
+  border-radius: 3px

@@ -1,7 +1,0 @@
-.no-box-shadow-focus:focus {
-  box-shadow: 0 0 0 0 !important;
-}
-
-.form-control-override-border:focus {
-  border: 1px solid #ced4da !important;
-}
