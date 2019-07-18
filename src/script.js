@@ -5,7 +5,7 @@ import './style.sass';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter, Route, Link, Switch, withRouter} from "react-router-dom";
+import { BrowserRouter, Route, Link, Switch, withRouter } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.css';
 import blank from './assets/placeholder.png';
 import beef from './assets/beef.png';
@@ -28,22 +28,42 @@ class App extends React.Component {
     };
 
     this.addRecipe = this.addRecipe.bind(this);
+    this.deleteRecipe = this.deleteRecipe.bind(this);
+    this.updateLastEaten = this.updateLastEaten.bind(this);
+  }
+
+  updateLastEaten(e) {
+    let newAry = [...this.state.entries];
+    const date = new Date();
+    newAry[e.target.dataset.key].lastEaten = date.toDateString();
+    this.setState({
+      entries: newAry
+    })
   }
 
   addRecipe(name, cookTime, ctUnit, ingredientList, instructions, pic) {
-    this.setState({entries: [
-      ...this.state.entries, 
-      {
-        name,
-        cookTime,
-        ctUnit,
-        ingredientList,
-        instructions,
-        pic
-      }
-    ]
-  });
+    this.setState({
+      entries: [
+        ...this.state.entries,
+        {
+          name,
+          cookTime,
+          ctUnit,
+          ingredientList,
+          instructions,
+          pic,
+          lastEaten: "Never"
+        }
+      ]
+    });
+  }
 
+  deleteRecipe(e) {
+    let newAry = [...this.state.entries];
+    newAry.splice(e.target.dataset.key, 1);
+    this.setState({
+      entries: newAry
+    })
   }
 
   render() {
@@ -51,17 +71,17 @@ class App extends React.Component {
     const NavbarRouter = withRouter(Navbar);
     return (
       <>
-        <NavbarRouter/>
+        <NavbarRouter />
         <Switch>
-          <Route 
+          <Route
             exact path="/"
-            render={() => <Home/>}/>
+            render={() => <Home entries={this.state.entries} deleteRecipe={this.deleteRecipe} updateLastEaten={this.updateLastEaten}/>} />
           <Route
             path="/add"
-            render={() => <Add addRecipe={this.addRecipe}/> }/>
+            render={() => <Add addRecipe={this.addRecipe} />} />
           <Route
             path="/recipe"
-            component={SingleRecipe}/>
+            component={SingleRecipe} />
         </Switch>
       </>
     );
@@ -75,44 +95,101 @@ class Navbar extends React.Component {
     };
   }
 
-    render() {
-      return (
-        <div id="navbar" className="pt-2 pb-2">
-          <Link to="/" id="homepage-btn" className="btn ml-3 no-box-shadow-focus fa-lg btn-light" type="button">
-            <i className="fas fa-home"></i>
-          </Link>
-          <div className={(this.props.location.pathname === "/") ? "input-group w-50" : "input-group w-50 invisible"}>
-            <div className="input-group-prepend">
-              <i id="search-icon" className="fas fa-search input-group-text pt-2 fa-lg"></i>
-            </div>
-            <input id="searchbar" className="form-control form-control-override-border no-box-shadow-focus" type="text" placeholder="Search..."/>
+  render() {
+    return (
+      <div id="navbar" className="pt-2 pb-2">
+        <Link to="/" id="homepage-btn" className="btn ml-3 no-box-shadow-focus fa-lg btn-light" type="button">
+          <i className="fas fa-home"></i>
+        </Link>
+        <div className={(this.props.location.pathname === "/") ? "input-group w-50" : "input-group w-50 invisible"}>
+          <div className="input-group-prepend">
+            <i id="search-icon" className="fas fa-search input-group-text pt-2 fa-lg"></i>
           </div>
-          <Link to="/add" id="add-entry-btn" className="btn btn-success mr-3 no-box-shadow-focus" type="button">
-            <i className="fas fa-plus fa-lg"></i>
-          </Link>
+          <input id="searchbar" className="form-control form-control-override-border no-box-shadow-focus" type="text" placeholder="Search..." />
         </div>
-      );
-    }
+        <Link to="/add" id="add-entry-btn" className="btn btn-success mr-3 no-box-shadow-focus" type="button">
+          <i className="fas fa-plus fa-lg"></i>
+        </Link>
+      </div>
+    );
+  }
 }
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      entries: this.props.entries
     }
   }
   render() {
+    const homeBody = (this.props.entries.length === 0) ? <Placeholder></Placeholder> : <div className="row w-75 mx-auto"><RecipeList rList={this.props.entries} deleteRecipe={this.props.deleteRecipe} updateLastEaten={this.props.updateLastEaten}></RecipeList></div>;
+    return (homeBody);
+  }
+}
+
+const Placeholder = () => {
+  return (
+  <div className="dynamic-body">
+    <div id="home-placeholder" className="pt-5">
+      <i id="home-placeholder-pic" className="fas fa-book-open fa-9x"></i>
+      <h1 id="home-placeholder-text" className="font-weight-bold">There's nothing here!<br />Press the + button to start adding recipes<br />Alternatively, press the populate button to set up example recipes</h1>
+      <button id="populate-btn" className="no-box-shadow-focus btn btn-lg btn-warning mt-3 mx-auto" type="button">Populate</button>
+    </div>
+  </div>
+  );
+}
+
+const RecipeList = (props) => {
+  return props.rList.map((recipe, id) => {
+    return <Recipe name={recipe.name} pic={recipe.pic} id={id} key={`recipe${id}`} lastEaten={recipe.lastEaten} deleteRecipe={props.deleteRecipe} updateLastEaten={props.updateLastEaten}></Recipe>
+  });
+}
+
+class Recipe extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      confirmDisplayed: false
+    }
+    this.showConfirm = this.showConfirm.bind(this);
+    this.hideConfirm = this.hideConfirm.bind(this);
+  }
+
+  showConfirm() {
+    this.setState({
+      confirmDisplayed: true
+    });
+  }
+
+  hideConfirm() {
+    this.setState({
+      confirmDisplayed: false
+    })
+  }
+
+  render() {
     return (
-      <div className="dynamic-body">
-        <div id ="home-placeholder" className="pt-5">
-          <i id="home-placeholder-pic" className="fas fa-book-open fa-9x"></i>
-          <h1 id="home-placeholder-text" className="font-weight-bold">There's nothing here!<br/>Press the + button to start adding recipes<br/>Alternatively, press the populate button to set up example recipes</h1>
-          <button id="populate-btn" className="no-box-shadow-focus btn btn-lg btn-warning mt-3 mx-auto" type="button">Populate</button>
-          <Link to="/recipe" className="btn btn-warning" type="button">Recipe</Link>
+      <div className="col-3 mt-4">
+        <div className="card">
+          <div className="card-header d-flex justify-content-between entry-header">
+            <div className={(this.state.confirmDisplayed) ? "d-inline-block" : "d-inline-block invisible"}>
+              <h5 className="d-inline">Are you sure?</h5>
+              <button className="btn btn-outline-secondary ml-2 btn-sm" data-key={this.props.id} type="button" onClick={(e) => {this.hideConfirm();this.props.deleteRecipe(e)}}>Yes</button>
+              <button className="btn btn-outline-secondary ml-2 btn-sm" type="button" onClick={this.hideConfirm}>No</button>
+            </div>
+            <button className="btn btn-sm delete-entry-btn" type="button" onClick={this.showConfirm}>X</button>
+          </div>
+          <img className="home-entry-pic mt-2" src={this.props.pic} />
+          <div className="card-body">
+            <h2 className="card-title text-center font-weight-bold">{this.props.name}</h2>
+          </div>
+          <div className="card-footer entry-footer">
+            <h3 className="text-center">Last Eaten: {this.props.lastEaten}</h3>
+            <button className="btn btn-lg btn-block just-ate-btn" type="button" data-key={this.props.id} onClick={(e) => {this.props.updateLastEaten(e)}}>Just Ate</button>
+          </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -162,7 +239,7 @@ class Add extends React.Component {
 
   handleDropdownSelect(e) {
     let src;
-    switch(e.target.innerText.toLowerCase()) {
+    switch (e.target.innerText.toLowerCase()) {
       case "blank":
         src = blank;
         break;
@@ -191,8 +268,6 @@ class Add extends React.Component {
         src = blank;
     }
 
-    console.log(src);
-
     this.setState({
       dropdownText: e.target.innerText,
       placeholderSrc: src
@@ -220,7 +295,7 @@ class Add extends React.Component {
   }
 
   storeIngredient() {
-    const amountIsNum = (!isNaN(this.state.amount));
+    const amountIsNum = (!isNaN(this.state.amount) && this.state.amount !== "");
     const foodExists = (this.state.food !== "");
 
     if (amountIsNum && foodExists) {
@@ -231,7 +306,7 @@ class Add extends React.Component {
         errorEnabled: false,
         errorMessage: "",
         ingredients: [
-          ...this.state.ingredients, {amount: this.state.amount, unit: this.state.unit, food: this.state.food}
+          ...this.state.ingredients, { amount: this.state.amount, unit: this.state.unit, food: this.state.food }
         ]
       });
     } else if (!amountIsNum) {
@@ -244,14 +319,13 @@ class Add extends React.Component {
   saveInput(e) {
     const name = e.target.dataset.name;
     const value = e.target.value;
-      
+
     this.setState({
-      [name] : value
+      [name]: value
     });
   }
 
   render() {
-    console.log(this.state);
     let ingredientList
     if (this.state.ingredients.length > 0) {
       ingredientList = this.state.ingredients.map((obj, key) => {
@@ -259,7 +333,7 @@ class Add extends React.Component {
           <div className="ml-3 mt-2" key={key}>
             <div className="d-inline-block ingredient-border">
               <p className="d-inline mr-2 ml-2 text-success font-weight-bold">{obj.amount} {obj.unit} {obj.food}</p>
-              <button className="btn btn-light btn-sm font-weight-bold mr-2 mt-1 mb-1" data-key={key} type="button" onClick={(e) => {this.deleteIngredient(e)}}>X</button>
+              <button className="btn btn-light btn-sm font-weight-bold mr-2 mt-1 mb-1 delete-ingredient-btn" data-key={key} type="button" onClick={(e) => { this.deleteIngredient(e) }}>X</button>
             </div>
           </div>
         );
@@ -267,66 +341,66 @@ class Add extends React.Component {
     } else {
       ingredientList = <div></div>
     }
-  return (
-    <div className="w-50 mx-auto">
-      <div className={this.state.errorEnabled ? "toast fade show" : "toast fade hide"} role="alert" aria-live="assertive" aria-atomic="true">
-      <div className="toast-body">{this.state.errorMessage}</div>
-      </div>
-      <h4 className="mt-3">Name</h4>
-      <input id="name-input" className="form-control no-box-shadow-focus form-control-override-border" type="text" data-name="name" onChange={(e) => this.saveInput(e)}/>
-      <h4 className="mt-2">Cook Time</h4>
-      <div className="input-group w-25">
-        <input id="cooktime-input" className="form-control no-box-shadow-focus form-control-override-border" data-name="cooktime" onChange={(e) => this.saveInput(e)} type="text"/>
-        <div className="btn-group" role="group">
-          <button id="hours-btn" className={(this.state.ctUnit === "hours") ? "btn btn-secondary no-box-shadow-focus bg-selected" : "btn btn-secondary no-box-shadow-focus"} type="button" onClick={(e) => {this.toggleSelect(e)}}>Hour(s)</button>
-          <button id="minutes-btn" className={(this.state.ctUnit ==="minutes") ? "btn btn-secondary no-box-shadow-focus bg-selected" : "btn btn-secondary no-box-shadow-focus"} type="button" onClick={(e) => {this.toggleSelect(e)}}>Minute(s)</button>
+    return (
+      <div className="w-50 mx-auto">
+        <div className={this.state.errorEnabled ? "toast fade show full-width text-center mt-2" : "toast fade hide full-width text-center mt-2"} role="alert" aria-live="assertive" aria-atomic="true">
+          <div id="error-text" className="toast-body text-danger font-weight-bold">{this.state.errorMessage}</div>
+        </div>
+        <h4 className="mt-3">Name</h4>
+        <input id="name-input" className="form-control no-box-shadow-focus form-control-override-border" type="text" data-name="name" onChange={(e) => this.saveInput(e)} />
+        <h4 className="mt-2">Cook Time</h4>
+        <div className="input-group w-25">
+          <input id="cooktime-input" className="form-control no-box-shadow-focus form-control-override-border" data-name="cooktime" onChange={(e) => this.saveInput(e)} type="text" />
+          <div className="btn-group" role="group">
+            <button id="hours-btn" className={(this.state.ctUnit === "hours") ? "btn btn-secondary no-box-shadow-focus bg-selected" : "btn btn-secondary no-box-shadow-focus"} type="button" onClick={(e) => { this.toggleSelect(e) }}>Hour(s)</button>
+            <button id="minutes-btn" className={(this.state.ctUnit === "minutes") ? "btn btn-secondary no-box-shadow-focus bg-selected" : "btn btn-secondary no-box-shadow-focus"} type="button" onClick={(e) => { this.toggleSelect(e) }}>Minute(s)</button>
+          </div>
+        </div>
+        <h4 className="mt-2">Ingredients</h4>
+        <div className="input-group">
+          <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.amount} placeholder="1" data-name="amount" onChange={(e) => this.saveInput(e)} />
+          <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.unit} placeholder="cup" data-name="unit" onChange={(e) => this.saveInput(e)} />
+          <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.food} placeholder="rice" data-name="food" onChange={(e) => this.saveInput(e)} />
+          <button id="add-ingredient-btn" className="btn btn-success no-box-shadow-focus" type="button" onClick={this.storeIngredient}>
+            <i className="fas fa-plus fa-lg"></i>
+          </button>
+        </div>
+        <div>
+          {ingredientList}
+        </div>
+        <h4 className="mt-2">Instructions</h4>
+        <input className="form-control no-box-shadow-focus form-control-override-border" type="text" data-name="instructions" onChange={(e) => this.saveInput(e)} />
+        <h4 className="mt-2">Choose your picture</h4>
+        <div className="dropdown">
+          <button className="btn btn-secondary dropdown-toggle no-box-shadow-focus" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" onClick={this.toggleDropdown}>
+            {this.state.dropdownText}
+          </button>
+          <div className={(this.state.showDropdown) ? "dropdown-menu show" : "dropdown-menu"} aria-labelledby="dropdownMenuButton" onClick={(e) => { this.handleDropdownSelect(e) }}>
+            <a className="dropdown-item" href="#">Blank</a>
+            <a className="dropdown-item" href="#">Beef</a>
+            <a className="dropdown-item" href="#">Chicken</a>
+            <a className="dropdown-item" href="#">Pasta</a>
+            <a className="dropdown-item" href="#">Pork</a>
+            <a className="dropdown-item" href="#">Potato</a>
+            <a className="dropdown-item" href="#">Rice</a>
+            <a className="dropdown-item" href="#">Taco</a>
+          </div>
+        </div>
+        <img id="placeholder-pic" className="mt-3" src={this.state.placeholderSrc} />
+        <div className="mt-3">
+          <Link to="/" className="btn btn-outline-success mr-4" onClick={() => this.props.addRecipe(this.state.name, this.state.cooktime, this.state.ctUnit, this.state.ingredients, this.state.instructions, this.state.placeholderSrc)}>Add</Link>
+          <Link to="/" className="btn btn-outline-danger">Cancel</Link>
         </div>
       </div>
-      <h4 className="mt-2">Ingredients</h4>
-      <div className="input-group">
-        <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.amount} placeholder="1" data-name="amount" onChange={(e) => this.saveInput(e)}/>
-        <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.unit} placeholder="cup" data-name="unit" onChange={(e) => this.saveInput(e)}/>
-        <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.food} placeholder="rice" data-name="food" onChange={(e) => this.saveInput(e)}/>
-        <button id="add-ingredient-btn" className="btn btn-success no-box-shadow-focus" type="button" onClick={this.storeIngredient}>
-          <i className="fas fa-plus fa-lg"></i>
-      </button>
-      </div>
-      <div>
-        {ingredientList}
-      </div>
-      <h4 className="mt-2">Instructions</h4>
-      <input className="form-control no-box-shadow-focus form-control-override-border" type="text" data-name="instructions" onChange={(e) => this.saveInput(e)}/>
-      <h4 className="mt-2">Choose your picture</h4>
-      <div className="dropdown">
-        <button className="btn btn-secondary dropdown-toggle no-box-shadow-focus" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" onClick={this.toggleDropdown}>
-          {this.state.dropdownText}
-        </button>
-        <div className={(this.state.showDropdown) ? "dropdown-menu show" : "dropdown-menu"} aria-labelledby="dropdownMenuButton" onClick={(e) => {this.handleDropdownSelect(e)}}>
-          <a className="dropdown-item" href="#">Blank</a>
-          <a className="dropdown-item" href="#">Beef</a>
-          <a className="dropdown-item" href="#">Chicken</a>
-          <a className="dropdown-item" href="#">Pasta</a>
-          <a className="dropdown-item" href="#">Pork</a>
-          <a className="dropdown-item" href="#">Potato</a>
-          <a className="dropdown-item" href="#">Rice</a>
-          <a className="dropdown-item" href="#">Taco</a>
-        </div>
-      </div>
-      <img id="placeholder-pic" className="mt-3" src={this.state.placeholderSrc}/>
-      <div className="mt-3">
-        <Link to="/" className="btn btn-outline-success mr-4" onClick={() => this.props.addRecipe(this.state.name, this.state.cooktime, this.state.ctUnit, this.state.ingredients, this.state.instructions, this.state.placeholderSrc)}>Add</Link>
-        <Link to="/" className="btn btn-outline-danger">Cancel</Link>
-      </div>
-    </div>
-  )
-}
+    )
+  }
 }
 
 class SingleRecipe extends React.Component {
   render() {
     return (
       <div className="w-50 mx-auto">
-        <img id="single-recipe-pic" className="w-25 mx-auto mt-3" src={beef}/>
+        <img id="single-recipe-pic" className="w-25 mx-auto mt-3" src={beef} />
         <h2 className="text-center mt-2">Placeholder Name</h2>
         <div className="mt-5 w-50 mx-auto text-center">
           <h2 className="d-inline mr-3">Cook Time:</h2>
@@ -342,19 +416,19 @@ class SingleRecipe extends React.Component {
         <h2 className="text-center mt-3">Ingredients</h2>
         <div className="text-center mt-3">
           <div>
-            <input type="checkbox" name="ingredient1" id="ingredient1"/>
+            <input type="checkbox" name="ingredient1" id="ingredient1" />
             <label className="ml-2 single-r-ingredient-item" htmlFor="ingredient1">Ingredient 1</label>
           </div>
           <div>
-            <input type="checkbox" name="ingredient2" id="ingredient2"/>
+            <input type="checkbox" name="ingredient2" id="ingredient2" />
             <label className="ml-2 single-r-ingredient-item" htmlFor="ingredient2">Ingredient 2</label>
           </div>
           <div>
-            <input type="checkbox" name="ingredient3" id="ingredient3"/>
+            <input type="checkbox" name="ingredient3" id="ingredient3" />
             <label className="ml-2 single-r-ingredient-item" htmlFor="ingredient3">Ingredient 3</label>
           </div>
           <div>
-            <input type="checkbox" name="ingredient4" id="ingredient4"/>
+            <input type="checkbox" name="ingredient4" id="ingredient4" />
             <label className="ml-2 single-r-ingredient-item" htmlFor="ingredient4">Ingredient 4</label>
           </div>
         </div>
@@ -366,8 +440,8 @@ class SingleRecipe extends React.Component {
 }
 
 ReactDOM.render(
-<BrowserRouter>
-  <App/>
-</BrowserRouter>,
-rootElm
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  rootElm
 );

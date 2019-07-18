@@ -22,7 +22,7 @@ body
 #navbar
   display: flex
   justify-content: space-between
-  background-color: #85c7ff
+  background-color: #ccc1ff
 
 #search-icon
   height: 38px
@@ -66,6 +66,9 @@ body
 #single-entry-instructions
   overflow-wrap: break-word
 
+#error-text
+  font-size: 1.2rem
+
 .dynamic-body
   height: 100%
 
@@ -82,3 +85,33 @@ input:checked + .single-r-ingredient-item
   border-top: 0.2rem solid #85c7ff80
   border-bottom: 0.2rem solid #85c7ff80
   border-radius: 3px
+
+.delete-ingredient-btn
+  background-color: transparent !important
+  border: none !important
+  &:focus
+    box-shadow: 0 0 0 0 !important
+
+.full-width
+  max-width: 100% !important
+
+.home-entry-pic
+  height: 15rem
+
+.delete-entry-btn
+  color: #fff !important
+  background-color: #f26b6b !important
+  border-color: #f26b6b !important
+  &:hover
+    background-color: #ce5b5b !important
+    border-color: #ce5b5b !important
+
+.entry-header
+  background-color: #ffe9e3 !important
+
+.entry-footer
+  background-color: #c4c1e0 !important
+
+.just-ate-btn
+  background-color: #7c73e6 !important
+  border-color: #7c73e6 !important
