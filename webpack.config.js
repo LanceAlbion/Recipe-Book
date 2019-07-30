@@ -33,7 +33,12 @@ module.exports = {
                 test: /\.(png|svg|jpg|gif|jpeg|JPEG)$/,
                 exclude: /node_modules/,
                 use: [
-                    'file-loader'
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            publicPath: '/'
+                        }
+                    }
                 ]
             },
             {
@@ -51,7 +56,7 @@ module.exports = {
                             "@babel/preset-react"
                         ]
                     }
-                }
+                },
             },
             {
                 test: /\.sass$/,

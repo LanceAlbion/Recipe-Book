@@ -1,23 +1,17 @@
-// .fade
-//   transition: opacity 1s linear 
-//   &:not(.show)
-//     opacity: 0
-//   &.show
-//     opacity: 1
-
 html
   height: 100%
   
 body
   height: 100%
 
-.no-box-shadow-focus
+button
   &:focus
-  box-shadow: 0 0 0 0 !important
+    box-shadow: 0 0 0 0 !important
 
-.form-control-override-border
+input
   &:focus
-  border: 1px solid #ced4da !important
+    box-shadow: 0 0 0 0 !important
+    border: 1px solid #ced4da !important
 
 #navbar
   display: flex
@@ -37,7 +31,6 @@ body
 #home-placeholder-text
   text-align: center
   line-height: 5rem
-  color: #6c757d91
 
 #populate-btn
   display: block
@@ -48,9 +41,6 @@ body
 
 #add-ingredient-btn
   border-radius: 0rem .25rem .25rem 0rem
-
-#hours-btn
-  border-radius: 0rem
 
 #placeholder-pic
   width: 13rem
@@ -72,19 +62,20 @@ body
 .dynamic-body
   height: 100%
 
+.no-border-radius
+  border-radius: 0rem !important
+
+.light-gray-font
+  color: #6c757d91
+
 .invisible
   visibility: hidden
 
 input:checked + .single-r-ingredient-item
-  text-decoration: line-through
+  color: #c6c6c6
 
 .bg-selected 
   background-color: #515151 !important
-
-.ingredient-border
-  border-top: 0.2rem solid #85c7ff80
-  border-bottom: 0.2rem solid #85c7ff80
-  border-radius: 3px
 
 .delete-ingredient-btn
   background-color: transparent !important
@@ -97,6 +88,7 @@ input:checked + .single-r-ingredient-item
 
 .home-entry-pic
   height: 15rem
+  width: 100%
 
 .delete-entry-btn
   color: #fff !important
@@ -115,3 +107,15 @@ input:checked + .single-r-ingredient-item
 .just-ate-btn
   background-color: #7c73e6 !important
   border-color: #7c73e6 !important
+
+.entry-card-text
+  color: #15131391
+  text-overflow: ellipsis !important
+  white-space: nowrap
+  overflow: hidden
+
+.center-align
+  align-items: center
+
+.light-gray-background
+  background-color: #f2f2f2 !important
