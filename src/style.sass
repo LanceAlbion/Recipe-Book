@@ -23,6 +23,9 @@ input
 
 #root
   height: 100%
+  overflow: scroll
+  display: flex
+  flex-direction: column
 
 #home-placeholder-pic
   display: block
@@ -59,6 +62,21 @@ input
 #error-text
   font-size: 1.2rem
 
+#pic-dropdown
+  background-color: #f4f9f4 !important
+
+#add-container, #home-container, #single-recipe-container
+  flex: 1
+
+#devdoor-container
+  position: absolute
+  top: 24rem
+  left: 2rem
+
+.pic-dropdown-item
+  &:hover
+    background-color: #a7d7c5 !important
+
 .dynamic-body
   height: 100%
 
@@ -72,7 +90,7 @@ input
   visibility: hidden
 
 input:checked + .single-r-ingredient-item
-  color: #c6c6c6
+  color: #ea8a8a57
 
 .bg-selected 
   background-color: #515151 !important
@@ -98,15 +116,9 @@ input:checked + .single-r-ingredient-item
     background-color: #ce5b5b !important
     border-color: #ce5b5b !important
 
-.entry-header
-  background-color: #ffe9e3 !important
-
-.entry-footer
-  background-color: #c4c1e0 !important
-
 .just-ate-btn
-  background-color: #7c73e6 !important
-  border-color: #7c73e6 !important
+  background-color: #efdfbf !important
+  border-color: #efdfbf !important
 
 .entry-card-text
   color: #15131391
@@ -119,3 +131,78 @@ input:checked + .single-r-ingredient-item
 
 .light-gray-background
   background-color: #f2f2f2 !important
+
+.light-pink-bg
+  background-color: #fffafa !important
+
+.salmon-bg
+  background-color: #ffe0e0 !important
+
+.dark-pink-bg
+  background-color: #ffc0d0 !important
+  border-color: #ffc0d0 !important
+
+.bg-selected-brown
+  background-color: #483c3c !important
+  border-color: #685454 !important
+
+.btn-brown
+  background-color: #685454 !important
+  border-color: #685454 !important
+
+.text-pink
+  color: #ea8a8a
+
+.single-recipe-ingredient
+  font-size: 1.3rem
+
+.cream-bg
+  background-color: #efdfbf30
+
+.bg-transparent
+  background-color: transparent !important
+
+.no-border
+  border: 0px !important
+
+.light-green-bg
+  background-color: #f4f9f4 !important
+
+.green-input
+  background-color: #f4f9f4 !important
+  border: 1px solid #a7d7c5 !important
+  &:focus
+    background-color: #f4f9f4 !important
+    border: 1px solid #a7d7c5 !important
+
+.bg-selected-green
+  background-color: #5c8d89 !important
+  border-color: #5c8d89 !important
+
+.btn-green 
+  background-color: #74b49b !important
+  border-color: #74b49b !important
+
+.btn-green-outline
+  color: #74b49b !important
+  background-color: transparent !important
+  border-color: #74b49b !important
+  &:hover
+    color: white !important
+    background-color: #74b49b !important
+    border-color: #74b49b !important
+
+.error-toast
+  position: relative
+  top: 25px
+  background-color: transparent
+  opacity: 0
+
+.show 
+  opacity: 1
+
+.h-inherit
+  height: inherit !important
+
+.custom-height
+  height: calc(100vh - 54px)
