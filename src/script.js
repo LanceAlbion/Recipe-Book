@@ -1,6 +1,24 @@
 //Recipe Book
 //Author: Chris Meyring
 
+/*
+Used to store recipe entries with the following fields:
+-Name
+-Cook time
+-Cook unit
+-Ingredients
+-Instructions
+-Picture
+
+Available features are as follows:
+-Add recipe
+-Look at catalogue of recipes
+-Keep track of when you've last eaten a recipe
+-Edit recipe
+-Delete recipe
+-Adjust portion sizes with multipliers 0.5, 1, 1.5, and 2
+*/
+
 import './style.sass';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
@@ -19,8 +37,9 @@ import chess from './assets/chess.png';
 import tictac from './assets/tictac.png';
 
 const rootElm = document.getElementById('root');
-
 let saveLog = localStorage.getItem('saveLog') ? JSON.parse(localStorage.getItem('saveLog')) : [];
+
+//example recipes. Access by typing "devdoor" into the search bar
 const examples = [
   {
     name: "Beef cubes w/ noodles",
@@ -320,6 +339,7 @@ class App extends React.Component {
     localStorage.setItem('saveLog', JSON.stringify(this.state.entries));
   }
 
+  //determines if value has a float. if it does, transforms float into a fraction and returns the new value
   num2frac(value) {
     if (value % 1 === 0) {
       return value;
@@ -461,7 +481,7 @@ class NavbarComponent extends React.Component {
         </Link>
         <div id="devdoor-container" className={this.props.search === "devdoor" ? "d-block" : "d-none"}>
           <button className="btn btn-lg btn-danger d-block mx-auto" onClick={this.props.setExampleEntries}>Example Entries</button>
-          <p className="text-center mt-2 text-danger font-weight-bold">Do not Click! <br/>Will overwrite your recipes!</p>
+          <p className="text-center mt-2 text-danger font-weight-bold">Do not click! <br/>Will overwrite your recipes!</p>
         </div>
         <div className={(this.props.location.pathname === "/") ? "input-group w-50" : "input-group w-50 invisible"}>
           <div className="input-group-prepend">
