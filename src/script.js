@@ -25,16 +25,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Link, Switch, withRouter, Redirect } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.css';
-import blank from './assets/placeholder.png';
+import blank from './assets/placeholder.jpg';
 import beef from './assets/beef.png';
-import chicken from './assets/chicken.png';
-import pasta from './assets/pasta.png';
-import pork from './assets/ham.png';
-import potato from './assets/potato.png';
-import rice from './assets/rice.png';
-import taco from './assets/taco.png';
-import chess from './assets/chess.png';
+import pasta from './assets/pasta.jpeg';
+import pork from './assets/ham.jpg';
+import potato from './assets/potato.jpg';
+import rice from './assets/rice.jpg';
+import taco from './assets/taco.jpg';
+import chess from './assets/chess.jpg';
 import tictac from './assets/tictac.png';
+import chicken from './assets/chicken.jpg';
 
 const rootElm = document.getElementById('root');
 let saveLog = localStorage.getItem('saveLog') ? JSON.parse(localStorage.getItem('saveLog')) : [];
@@ -313,9 +313,7 @@ class App extends React.Component {
     this.state = {
       search: "",
       entries: this.props.saveLog,
-      searchMatchEntries: [
-
-      ]
+      searchMatchEntries: []
     };
 
     this.addRecipe = this.addRecipe.bind(this);
@@ -377,7 +375,7 @@ class App extends React.Component {
 
   updateSearch(e) {
     const searchStr = e.target.value;
-    let searchMatch = this.state.entries.filter(entry => {
+    const searchMatch = this.state.entries.filter(entry => {
       return entry.name.toLowerCase().includes(searchStr.toLowerCase());
     });
 
@@ -388,7 +386,7 @@ class App extends React.Component {
   }
 
   updateLastEaten(e) {
-    let newAry = [...this.state.entries];
+    const newAry = [...this.state.entries];
     const date = new Date();
     newAry[e.target.dataset.id].lastEaten = date.toDateString();
     this.setState({
@@ -434,7 +432,7 @@ class App extends React.Component {
   }
 
   deleteRecipe(e) {
-    let newAry = [...this.state.entries];
+    const newAry = [...this.state.entries];
     newAry.splice(e.target.dataset.id, 1);
     this.setState({
       entries: newAry
@@ -442,7 +440,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     const results = (this.state.search !== "") ? this.state.searchMatchEntries : this.state.entries;
     return (
       <>
@@ -485,7 +482,7 @@ class NavbarComponent extends React.Component {
         </div>
         <div className={(this.props.location.pathname === "/") ? "input-group w-50" : "input-group w-50 invisible"}>
           <div className="input-group-prepend">
-            <i id="search-icon" className="fas fa-search input-group-text pt-2 fa-lg"></i>
+            <i className="fas fa-search input-group-text pt-2 fa-lg"></i>
           </div>
           <input id="searchbar" className="form-control form-control-override-border no-box-shadow-focus" value={this.props.search} type="text" placeholder="Search..." onChange={(e) => {this.props.updateSearch(e)}}/>
         </div>
@@ -501,23 +498,63 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      idToDelete: 0,
+      showModal: false
+    }
+    this.storeId = this.storeId.bind(this);
+    this.showModal = this.showModal.bind(this);
+    this.hideModal = this.hideModal.bind(this);
+  }
 
+  showModal() {
+    this.setState({
+      showModal: true
+    })
+  }
+
+  hideModal(e) {
+    if (!e.target.className.includes('content')) {
+      this.setState({
+        showModal: false
+      });
     }
   }
+
+  storeId(e) {
+    this.setState({
+      idToDelete: e.target.dataset.id
+    });
+  }
+
   render() {
     let homeBody;
+
     if (this.props.entries.length === 0 && this.props.search !== "") {
       homeBody = <NoSearchResultsFound></NoSearchResultsFound>;
     } else if (this.props.entries.length === 0) {
       homeBody = <Placeholder></Placeholder>;
     } else {
       homeBody = 
-      <div id="home-container" className="light-pink-bg h-100">
-        <div className="row w-75 mx-auto">
-          <RecipeList rList={this.props.entries} deleteRecipe={this.props.deleteRecipe} updateLastEaten={this.props.updateLastEaten}></RecipeList>
-        </div>;
-      </div>
+        <>
+            <div id="modal" className={this.state.showModal ? "d-block modal show drag-into-screen fade-opacity" : "d-block modal"} tabIndex="-1" onClick={(e) => {this.hideModal(e)}}>
+              <div className="modal-dialog" role="document">
+                <div className={this.state.showModal ? "modal-content content fade-opacity" : "modal-content content"}>
+                  <div className="modal-body content">
+                    <p className="content">Are you sure?</p>
+                  </div>
+                  <div className="modal-footer content">
+                    <button type="button" className="btn btn-danger" data-id={this.state.idToDelete} onClick={(e) => {this.props.deleteRecipe(e)}}>Yes</button>
+                    <button type="button" className="btn btn-secondary">No</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div className="row w-75 mx-auto mt-5">
+            <RecipeList rList={this.props.entries} updateLastEaten={this.props.updateLastEaten} storeId={this.storeId} showModal={this.showModal}></RecipeList>
+          </div>
+        </>
     }
+
     return homeBody;
   }
 }
@@ -532,7 +569,7 @@ const NoSearchResultsFound = () => {
 
 const Placeholder = () => {
   return (
-  <div className="dynamic-body light-pink-bg">
+  <div className="dynamic-body">
     <div id="home-placeholder" className="pt-5">
       <i id="home-placeholder-pic" className="fas fa-book-open fa-9x"></i>
       <h1 id="home-placeholder-text" className="font-weight-bold light-gray-font">There's nothing here!<br />Press the + at the top of the screen or the <br/> button below to start adding recipes</h1>
@@ -546,7 +583,7 @@ const Placeholder = () => {
 
 const RecipeList = (props) => {
   return props.rList.map((recipe, id) => {
-    return <Recipe name={recipe.name} picText={recipe.picText} id={id} key={`recipe${id}`} lastEaten={recipe.lastEaten} deleteRecipe={props.deleteRecipe} updateLastEaten={props.updateLastEaten}></Recipe>
+    return <Recipe name={recipe.name} picText={recipe.picText} id={id} key={`recipe${id}`} lastEaten={recipe.lastEaten} storeId={props.storeId} updateLastEaten={props.updateLastEaten} showModal={props.showModal}></Recipe>
   });
 }
 
@@ -573,26 +610,18 @@ class Recipe extends React.Component {
   }
 
   render() {
+    const {name, picText, id, lastEaten, updateLastEaten, storeId, showModal} = this.props;
     return (
-      <div className="col-3 mt-4">
+      <div className="col-4 mb-5">
         <div className="card">
-          <div className="card-header d-flex justify-content-between entry-header salmon-bg">
-            <div className={(this.state.confirmDisplayed) ? "d-inline-block" : "d-inline-block invisible"}>
-              <h5 className="d-inline">Are you sure?</h5>
-              <button className="btn btn-outline-secondary ml-2 btn-sm" data-id={this.props.id} type="button" onClick={(e) => {this.hideConfirm();this.props.deleteRecipe(e)}}>Yes</button>
-              <button className="btn btn-outline-secondary ml-2 btn-sm" type="button" onClick={this.hideConfirm}>No</button>
-            </div>
-            <button className="btn btn-sm btn-dark" type="button" onClick={this.showConfirm}>X</button>
-          </div>
-          <Link className="home-entry-pic" to={this.props.id.toString()}>
-          <img className="home-entry-pic w-50 d-block mx-auto pt-2 pb-2" src={handlePicDisplay(this.props.picText)} data-id={this.props.id}/>
+          <Link className="no-text-decoration" to={id.toString()}>
+            <img src={handlePicDisplay(picText)} className="card-img-top mb-3 home-recipe-thumbnail"/>
           </Link>
-          <div className="card-body border-top salmon-bg">
-            <h2 className="card-title text-center font-weight-bold entry-card-text">{(this.props.name || "N/A")}</h2>
-          </div>
-          <div className="card-footer entry-footer dark-pink-bg">
-            <h3 className="text-center">Last Eaten: {this.props.lastEaten}</h3>
-            <button className="btn btn-lg btn-block just-ate-btn" type="button" data-id={this.props.id} onClick={(e) => {this.props.updateLastEaten(e)}}>Just Ate</button>
+          <h3 className="card-title text-center mb-3">{name}</h3>
+          <p className="card-text text-center">{`Last Eaten: ${lastEaten}`}</p>
+          <div className="d-flex justify-content-around mb-3">
+            <a href="#" className="card-link d-inline" data-id={id} onClick={(e) => {updateLastEaten(e)}}>Just Ate</a>
+            <a href="#" className="card-link d-inline" data-id={id} onClick={(e) => {storeId(e);showModal()}}>Delete</a>
           </div>
         </div>
       </div>
@@ -634,15 +663,16 @@ class Add extends React.Component {
 
   componentDidMount() {
     if (this.props.recipe) {
+      const {name, cookTime, ctUnit, instructions, lastEaten} = this.props.recipe
       this.setState({
-        name: this.props.recipe.name,
-        cookTime: this.props.recipe.cookTime,
-        ctUnit: this.props.recipe.ctUnit,
-        instructions: this.props.recipe.instructions,
+        name,
+        cookTime,
+        ctUnit,
+        instructions,
         dropdownText: this.props.recipe.picTitle,
         placeholderSrc: this.props.recipe.picText,
         ingredients: this.cloneIngredientList(),
-        lastEaten: this.props.recipe.lastEaten,
+        lastEaten,
         index: this.props.id
       });
     }
@@ -763,9 +793,9 @@ class Add extends React.Component {
 
   render() {
     const redirect = this.state.redirect ? <Redirect to="/"></Redirect> : null
-    let ingredientList = this.state.ingredients.map((obj, key) => {
+    const ingredientList = this.state.ingredients.map((obj, key) => {
       return (
-          <div className="d-flex justify-content-between center-align list-group-item green-input" key={key}>
+          <div className="d-flex justify-content-between center-align list-group-item" key={key}>
             <p className="mb-0 font-weight-bold">{this.props.num2frac(obj.amount)} {obj.unit} {obj.food}</p>
             <button className="btn btn-light btn-sm font-weight-bold delete-ingredient-btn" data-id={key} type="button" onClick={(e) => { this.deleteIngredient(e) }}>X</button>
           </div>
@@ -773,28 +803,27 @@ class Add extends React.Component {
     });
 
     return (
-      <div id="add-container" className="light-green-bg w-100 ">
       <div className="w-50 mx-auto">
         {redirect}
-        <div className={this.state.errorEnabled ? "error-toast show text-center" : "error-toast text-center"} role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="error-toast" className={this.state.errorEnabled ? "error-toast show text-center rounded-lg w-50 fade-opacity" : "error-toast text-center rounded-lg w-50"} role="alert" aria-live="assertive" aria-atomic="true">
           <div id="error-text" className="toast-body text-danger font-weight-bold">{this.state.errorMessage}</div>
         </div>
         <h4 className="mt-3">Name</h4>
-        <input id="name-input" className="form-control no-box-shadow-focus form-control-override-border green-input" value={this.state.name} type="text" data-name="name" onChange={(e) => this.saveInput(e)} />
+        <input id="name-input" className="form-control no-box-shadow-focus form-control-override-border" value={this.state.name} type="text" data-name="name" onChange={(e) => this.saveInput(e)} />
         <h4 className="mt-2">Cook Time</h4>
         <div className="input-group w-25">
-          <input id="cooktime-input" className="form-control no-box-shadow-focus form-control-override-border green-input" value={this.state.cookTime} data-name="cookTime" onChange={(e) => this.saveInput(e)} type="text" />
+          <input id="cooktime-input" className="form-control no-box-shadow-focus form-control-override-border" value={this.state.cookTime} data-name="cookTime" onChange={(e) => this.saveInput(e)} type="text" />
           <div className="btn-group" role="group">
-            <button id="hours-btn" className={(this.state.ctUnit === "Hour(s)") ? "btn no-box-shadow-focus bg-selected-green no-border-radius text-white" : "btn btn-green no-box-shadow-focus no-border-radius text-white"} type="button" onClick={(e) => { this.toggleCookTimeUnit(e) }}>Hour(s)</button>
-            <button id="minutes-btn" className={(this.state.ctUnit === "Minute(s)") ? "btn no-box-shadow-focus bg-selected-green text-white" : "btn btn-green no-box-shadow-focus text-white"} type="button" onClick={(e) => { this.toggleCookTimeUnit(e) }}>Minute(s)</button>
+            <button id="hours-btn" className={(this.state.ctUnit === "Hour(s)") ? "btn bg-selected no-box-shadow-focus no-border-radius text-white" : "btn btn-secondary no-box-shadow-focus no-border-radius "} type="button" onClick={(e) => { this.toggleCookTimeUnit(e) }}>Hour(s)</button>
+            <button id="minutes-btn" className={(this.state.ctUnit === "Minute(s)") ? "btn bg-selected no-box-shadow-focus text-white" : "btn btn-secondary no-box-shadow-focus"} type="button" onClick={(e) => { this.toggleCookTimeUnit(e) }}>Minute(s)</button>
           </div>
         </div>
         <h4 className="mt-2">Ingredients</h4>
         <div className="input-group">
-          <input className="form-control no-box-shadow-focus form-control-override-border green-input" value={this.state.amount} placeholder="1" data-name="amount" onChange={(e) => this.saveInput(e)} />
-          <input className="form-control no-box-shadow-focus form-control-override-border green-input" value={this.state.unit} placeholder="cup" data-name="unit" onChange={(e) => this.saveInput(e)} />
-          <input className="form-control no-box-shadow-focus form-control-override-border green-input" value={this.state.food} placeholder="rice" data-name="food" onChange={(e) => this.saveInput(e)} />
-          <button id="add-ingredient-btn" className="btn btn-green no-box-shadow-focus text-white" type="button" onClick={this.storeIngredient}>
+          <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.amount} placeholder="1" data-name="amount" onChange={(e) => this.saveInput(e)} />
+          <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.unit} placeholder="cup" data-name="unit" onChange={(e) => this.saveInput(e)} />
+          <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.food} placeholder="rice" data-name="food" onChange={(e) => this.saveInput(e)} />
+          <button id="add-ingredient-btn" className="btn btn-success no-box-shadow-focus" type="button" onClick={this.storeIngredient}>
             <i className="fas fa-plus fa-lg"></i>
           </button>
         </div>
@@ -803,29 +832,28 @@ class Add extends React.Component {
         </div>
         <p><small className="text-primary">Non whole numbers must be a decimal value</small></p>
         <h4 className="mt-2">Instructions</h4>
-        <input className="form-control no-box-shadow-focus form-control-override-border green-input" value={this.state.instructions} type="text" data-name="instructions" onChange={(e) => this.saveInput(e)} />
+        <input className="form-control no-box-shadow-focus form-control-override-border" value={this.state.instructions} type="text" data-name="instructions" onChange={(e) => this.saveInput(e)} />
         <h4 className="mt-2">Choose your picture</h4>
         <div className="dropdown">
-          <button className="btn btn-green dropdown-toggle no-box-shadow-focus text-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" onClick={this.toggleDropdown}>
+          <button className="btn btn-secondary dropdown-toggle no-box-shadow-focus" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" onClick={this.toggleDropdown}>
             {this.state.dropdownText}
           </button>
-          <div id="pic-dropdown" className={(this.state.showDropdown) ? "dropdown-menu show" : "dropdown-menu"} aria-labelledby="dropdownMenuButton" onClick={(e) => { this.handleDropdownSelect(e) }}>
-            <a className="dropdown-item pic-dropdown-item" href="#">Blank</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Beef</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Chicken</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Pasta</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Pork</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Potato</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Rice</a>
-            <a className="dropdown-item pic-dropdown-item" href="#">Taco</a>
+          <div className={(this.state.showDropdown) ? "dropdown-menu show" : "dropdown-menu"} aria-labelledby="dropdownMenuButton" onClick={(e) => { this.handleDropdownSelect(e) }}>
+            <a className="dropdown-item" href="#">Blank</a>
+            <a className="dropdown-item" href="#">Beef</a>
+            <a className="dropdown-item" href="#">Chicken</a>
+            <a className="dropdown-item" href="#">Pasta</a>
+            <a className="dropdown-item" href="#">Pork</a>
+            <a className="dropdown-item" href="#">Potato</a>
+            <a className="dropdown-item" href="#">Rice</a>
+            <a className="dropdown-item" href="#">Taco</a>
           </div>
         </div>
         <img id="placeholder-pic" className="mt-3" src={handlePicDisplay(this.state.placeholderSrc)} />
         <div className="mt-3 mb-5">
-          <button className="btn btn-green-outline mr-4" onClick={this.validateFields}>{this.props.recipe ? "Save Changes" : "Add"}</button>
-          <Link to="/" className="btn btn-outline-secondary">Cancel</Link>
+          <button className="btn btn-outline-success mr-4" onClick={this.validateFields}>{this.props.recipe ? "Save Changes" : "Add"}</button>
+          <Link to="/" className="btn btn-outline-danger">Cancel</Link>
         </div>
-      </div>
       </div>
     )
   }
@@ -847,42 +875,56 @@ class SingleRecipe extends React.Component {
   }
 
   render() {
-    let ingredientList = (this.props.recipe.ingredientList.length === 0) ? <h4 className="text-center">N/A</h4> : this.props.recipe.ingredientList.map((entry, key) => {
+    let recipe = this.props.recipe;
+    let ingredientList = (recipe.ingredientList.length === 0) ? <h4>N/A</h4> : recipe.ingredientList.map((entry, key) => {
       return (
-      <div className="text-center" key={key}>
-        <input type="checkbox" id={`ingredient${key}`} name={`ingredient${key}`}/>
-        <label className="ml-2 single-r-ingredient-item text-pink single-recipe-ingredient font-weight-bold" htmlFor={`ingredient${key}`}>{this.props.num2frac(entry.amount * this.state.portion)} {entry.unit} {entry.food}</label>
+      <div className="mb-2" key={key}>
+        <input className="mr-2 d-inline" id={`ingredient${key}`} type="checkbox"/>
+        <label htmlFor={`ingredient${key}`} className="d-inline">{this.props.num2frac(entry.amount * this.state.portion)} {entry.unit} {entry.food}</label>
       </div>
       );
     });
+
     return (
-    <div id="single-recipe-container" className="pt-4 cream-bg">
-      <div className="card w-50 mx-auto bg-transparent no-border h-max-content">
-        <img className=" card-img-top w-25 mx-auto d-block mt-4" src={handlePicDisplay(this.props.recipe.picText)}/>
-          <div className="card-body">
-            <h2 className="text-center">Name</h2>
-            <h4 className="text-center">{this.props.recipe.name || "N/A"}</h4>
-            <h2 className="text-center mt-4">Cook Time</h2>
-            <h4 className="text-center">{this.props.recipe.cookTime || "N/A"} {this.props.recipe.ctUnit}</h4>
-            <h2 className="text-center mt-4">Portion</h2>
-            <div className="d-flex justify-content-center">
-              <div className="btn-toolbar">
-                <button className={(this.state.portion === 0.5) ? "btn bg-selected-brown no-border-radius text-white": "btn btn-brown no-border-radius text-white"} onClick={() => {this.updatePortion(.5)}} type="button">0.5</button>
-                <button className={(this.state.portion === 1) ? "btn bg-selected-brown no-border-radius text-white": "btn btn-brown no-border-radius text-white"} onClick={() => {this.updatePortion(1)}} type="button">1</button>
-                <button className={(this.state.portion === 1.5) ? "btn bg-selected-brown no-border-radius text-white": "btn btn-brown no-border-radius text-white"} onClick={() => {this.updatePortion(1.5)}} type="button">1.5</button>
-                <button className={(this.state.portion === 2) ? "btn bg-selected-brown no-border-radius text-white": "btn btn-brown no-border-radius text-white"} onClick={() => {this.updatePortion(2)}} type="button">2</button>
+      <div className="container mt-5">
+        <div id="img-header-single">
+        <img className="img-fluid" src={handlePicDisplay(recipe.picText)}/>
+        </div>
+        <h1 className="mt-4 text-center mb-5">{recipe.name}</h1>
+        <div className="row justify-content-between mb-5">
+          <div className="col-4">
+            <div className="card">
+              <div className="card-body">
+                <div className="card-title mb-4">
+                  <h3>Ingredients</h3>
+                </div>
+                <h5>Portion</h5>
+                <div className="btn-group mb-5">
+                  <button className={(this.state.portion === 0.5) ? "btn btn-secondary bg-selected ": "btn btn-secondary"} onClick={() => {this.updatePortion(.5)}} type="button">0.5</button>
+                  <button className={(this.state.portion === 1) ? "btn btn-secondary bg-selected ": "btn btn-secondary"} onClick={() => {this.updatePortion(1)}} type="button">1</button>
+                  <button className={(this.state.portion === 1.5) ? "btn btn-secondary bg-selected": "btn btn-secondary"} onClick={() => {this.updatePortion(1.5)}} type="button">1.5</button>
+                  <button className={(this.state.portion === 2) ? "btn btn-secondary bg-selected": "btn btn-secondary"} onClick={() => {this.updatePortion(2)}} type="button">2</button>
+                </div>
+                <div>
+                  {ingredientList}
+                </div>
               </div>
             </div>
-            <h2 className="text-center mt-4">Ingredients</h2>
-            <div>
-              {ingredientList}
-            </div>
-            <h2 className="text-center mt-4">Instructions</h2>
-            <h4 className="text-center">{this.props.recipe.instructions || "N/A"}</h4>
-            <Link to={`${this.props.currentUrl}/edit`} className="btn dark-pink-bg mt-4 w-50 mx-auto d-block mb-4">Edit</Link>
           </div>
+          <div className="col-7">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex justify-content-between mb-4">
+                  <h3 className="card-title">Instructions</h3>
+                  <h5 className="align-self-center">Cooktime: {recipe.cookTime || "N/A"} {recipe.ctUnit}</h5>
+                </div>
+                <p className="card-text">{recipe.instructions || "N/A"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Link className="btn btn-outline-primary btn-block" to={`${this.props.currentUrl}/edit`}>Edit</Link>
       </div>
-    </div>
     );
   }
 }

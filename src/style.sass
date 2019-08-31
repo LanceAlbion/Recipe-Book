@@ -24,185 +24,113 @@ input
 #root
   height: 100%
   overflow: scroll
-  display: flex
-  flex-direction: column
 
-#home-placeholder-pic
-  display: block
-  text-align: center
+  #home-placeholder-pic
+    display: block
+    text-align: center
 
-#home-placeholder-text
-  text-align: center
-  line-height: 5rem
+  #home-placeholder-text
+    text-align: center
+    line-height: 5rem
 
-#populate-btn
-  display: block
+  #cooktime-input
+    display: inline
+    border-radius: .25rem 0rem 0rem .25rem
 
-#cooktime-input
-  display: inline
-  border-radius: .25rem 0rem 0rem .25rem
+  #add-ingredient-btn
+    border-radius: 0rem .25rem .25rem 0rem
 
-#add-ingredient-btn
-  border-radius: 0rem .25rem .25rem 0rem
+  #placeholder-pic
+    width: 13rem
+    height: 8rem
 
-#placeholder-pic
-  width: 13rem
-  height: 8rem
+  #error-text
+    font-size: 1.2rem
 
-#single-recipe-pic
-  display: block
+  #devdoor-container
+    position: absolute
+    top: 24rem
+    left: 2rem
 
-#search-icon
-  &:active
-    background-color: #dcdfe1
+  #img-header-single
+    height: 400px
+    overflow: hidden
 
-#single-entry-instructions
-  overflow-wrap: break-word
+  #error-toast
+    background-color: white
+    border: 1px solid #dfdfdf
+    position: fixed
+    top: 1rem
+    opacity: 0
+    transition: opacity 0.4s
 
-#error-text
-  font-size: 1.2rem
+  .dynamic-body
+    height: 100%
 
-#pic-dropdown
-  background-color: #f4f9f4 !important
+  .no-border-radius
+    border-radius: 0rem !important
 
-#add-container, #home-container, #single-recipe-container
-  flex: 1
+  .light-gray-font
+    color: #6c757d91
 
-#devdoor-container
-  position: absolute
-  top: 24rem
-  left: 2rem
+  .invisible
+    visibility: hidden
 
-.pic-dropdown-item
-  &:hover
-    background-color: #a7d7c5 !important
+  input:checked + label
+    color: #cacaca
 
-.dynamic-body
-  height: 100%
+  .bg-selected 
+    background-color: #5a6268 !important
+    border-color: #5a6268 !important
 
-.no-border-radius
-  border-radius: 0rem !important
+  .delete-ingredient-btn
+    background-color: transparent !important
+    border: none !important
+    &:focus
+      box-shadow: 0 0 0 0 !important
 
-.light-gray-font
-  color: #6c757d91
+  .center-align
+    align-items: center
 
-.invisible
-  visibility: hidden
+  .no-border
+    border: 0px !important
 
-input:checked + .single-r-ingredient-item
-  color: #ea8a8a57
+  .error-toast
+    position: relative
+    top: 25px
+    background-color: transparent
+    opacity: 0
 
-.bg-selected 
-  background-color: #515151 !important
+  .show 
+    opacity: 1
 
-.delete-ingredient-btn
-  background-color: transparent !important
-  border: none !important
-  &:focus
-    box-shadow: 0 0 0 0 !important
+  .no-text-decoration
+    &:hover
+      text-decoration: none 
 
-.full-width
-  max-width: 100% !important
+  .container
+    max-width: 80vw
 
-.home-entry-pic
-  height: 15rem
-  width: 100%
+  .home-recipe-thumbnail
+    height: 21rem
 
-.delete-entry-btn
-  color: #fff !important
-  background-color: #f26b6b !important
-  border-color: #f26b6b !important
-  &:hover
-    background-color: #ce5b5b !important
-    border-color: #ce5b5b !important
+  .modal
+    opacity: 0
+    top: -100vh
+    background-color: rgba(0, 0, 0, 0.38)
+    transition: opacity 0.4s, top 0s 0.4s
+  
+  .drag-into-screen
+    top: 0px
 
-.just-ate-btn
-  background-color: #efdfbf !important
-  border-color: #efdfbf !important
+  .modal-dialog
+    transform: transition !important
+    transition: none !important
 
-.entry-card-text
-  color: #15131391
-  text-overflow: ellipsis !important
-  white-space: nowrap
-  overflow: hidden
+  .modal-content
+    opacity: 0
+    transition: opacity 0.4s
 
-.center-align
-  align-items: center
-
-.light-gray-background
-  background-color: #f2f2f2 !important
-
-.light-pink-bg
-  background-color: #fffafa !important
-
-.salmon-bg
-  background-color: #ffe0e0 !important
-
-.dark-pink-bg
-  background-color: #ffc0d0 !important
-  border-color: #ffc0d0 !important
-
-.bg-selected-brown
-  background-color: #483c3c !important
-  border-color: #685454 !important
-
-.btn-brown
-  background-color: #685454 !important
-  border-color: #685454 !important
-
-.text-pink
-  color: #ea8a8a
-
-.single-recipe-ingredient
-  font-size: 1.3rem
-
-.cream-bg
-  background-color: #efdfbf30
-
-.bg-transparent
-  background-color: transparent !important
-
-.no-border
-  border: 0px !important
-
-.light-green-bg
-  background-color: #f4f9f4 !important
-
-.green-input
-  background-color: #f4f9f4 !important
-  border: 1px solid #a7d7c5 !important
-  &:focus
-    background-color: #f4f9f4 !important
-    border: 1px solid #a7d7c5 !important
-
-.bg-selected-green
-  background-color: #5c8d89 !important
-  border-color: #5c8d89 !important
-
-.btn-green 
-  background-color: #74b49b !important
-  border-color: #74b49b !important
-
-.btn-green-outline
-  color: #74b49b !important
-  background-color: transparent !important
-  border-color: #74b49b !important
-  &:hover
-    color: white !important
-    background-color: #74b49b !important
-    border-color: #74b49b !important
-
-.error-toast
-  position: relative
-  top: 25px
-  background-color: transparent
-  opacity: 0
-
-.show 
-  opacity: 1
-
-.h-inherit
-  height: inherit !important
-
-.custom-height
-  height: calc(100vh - 54px)
+  .fade-opacity
+    opacity: 1 !important
+    transition: opacity 0.4s
